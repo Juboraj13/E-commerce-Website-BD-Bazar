@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Bazar - Login</title>
+    <link rel="stylesheet" href="/Frontend/css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>BD Bazar</h1>
+            <p>Welcome back! Please sign in to your account</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <div class="error-message" id="emailError">Please enter a valid email address</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <button type="button" class="toggle-password" id="togglePassword">👁️</button>
+                </div>
+                <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
+            </div>
+
+            <div class="options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <div class="loading" id="loading"></div>
+                Sign In
+            </button>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <div class="loading1" id="loading1"></div>
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>Or continue with</span>
+        </div>
+
+        <div class="social-login">
+            <button class="social-btn google-btn" id="googleLogin">
+                <span>G</span> Google
+            </button>
+            <button class="social-btn facebook-btn" id="facebookLogin">
+                <span>f</span> Facebook
+            </button>
+        </div>
+
+        <div class="signup-link">
+            Don't have an account? <a href="#">Sign up here</a>
+        </div>
+    </div>
+</body>
+</html>

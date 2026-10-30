@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BazarBD - Online Shopping in Bangladesh</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="home.js"></script>
+    <script src="common.js"></script>
+
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <div>📞 +88-01234-567890 | 📧 info@bazarbd.com</div>
+                <div>🚚 Free Delivery | 🔒 Secure Payment</div>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="#" class="logo" onclick="showPage('home')">BazarBD</a>
+                    <div class="search-container">
+                        <input type="text" class="search-box" placeholder="Search products...">
+                        <button class="search-btn">🔍</button>
+                    </div>
+                    <div class="header-actions">
+                        <a href="#" class="header-link" onclick="showPage('login')">Login / Sing up</a>
+                        <a href="cart.html" class="header-link cart-badge">
+                            🛒 Cart
+                            <span class="cart-count" id="cartCount">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="card_container">
+            <a href="fashion.html">
+                <div class="card">
+                    <div class="card_img">
+                        <img src="image/Fashion.jpg" alt="Fashion">
+                    </div>
+                    <h2>Fashion</h2>
+                </div>
+            </a>
+
+            <a href="electronic.html">
+                <div class="card">
+                    <div class="card_img">
+                        <img src="image/Electronics.jpeg" alt="Fashion">
+                    </div>
+                    <h2>Electronics</h2>
+                </div>
+            </a>
+
+            <a href="bike.html">
+                <div class="card">
+                    <div class="card_img">
+                        <img src="image/bike.avif" alt="Bike">
+                    </div>
+                    <h2>Bike</h2>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h2 class="logo">BazarBD</h2>
+                <p>দ্রুত ডেলিভারি, নিরাপদ পেমেন্ট, আসল পণ্য।</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Help</h3>
+                <ul>
+                    <li><a href="#">How to Order</a></li>
+                    <li><a href="#">Payment Options</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="#">Mobile</a></li>
+                    <li><a href="#">Computer</a></li>
+                    <li><a href="#">Fashion</a></li>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Beauty</a></li>
+                    <li><a href="#">Sports</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: support@bazarbd.com</p>
+                <p>Phone: +88-01234-567890</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 BazarBD — All rights reserved.</p>
+        </div>
+</footer>
+
+</body>
+</html>

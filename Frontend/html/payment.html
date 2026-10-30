@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment & Checkout - BazarBD</title>
+    <link rel="stylesheet" href="/Frontend/css/style.css">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 80vh;
+        }
+        
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        
+        .checkout-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 20px;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-circle.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .step-circle.completed {
+            background: #28a745;
+            color: white;
+        }
+        
+        .step-circle.inactive {
+            background: #f0f0f0;
+            color: #999;
+        }
+        
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .checkout-form {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 35px;
+        }
+        
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .payment-method {
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+        
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+        
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .payment-method-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+        }
+        
+        .payment-method h4 {
+            margin: 0;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .card-details {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .card-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+        
+        .order-summary {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        .order-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .item-info p {
+            margin: 0;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .item-price {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+        }
+        
+        .summary-row.total {
+            border-top: 2px solid #f0f0f0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+        }
+        
+        .place-order-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+        }
+        
+        .place-order-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .place-order-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .back-to-cart {
+            display: inline-block;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .back-to-cart:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .security-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .security-info h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .security-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkout-header h1 {
+                font-size: 2rem;
+            }
+            
+            .progress-step {
+                margin: 5px 10px;
+                font-size: 14px;
+            }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <div>📞 +88-01234-567890 | 📧 info@bazarbd.com</div>
+                <div>🚚 Free Delivery | 🔒 Secure Payment</div>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="index.html" class="logo">BazarBD</a>
+                    <div class="search-container">
+                        <input type="text" class="search-box" placeholder="Search products...">
+                        <button class="search-btn">🔍</button>
+                    </div>
+                    <div class="header-actions">
+                        <a href="login.html" class="header-link">Login / Sign up</a>
+                        <a href="cart.html" class="header-link cart-badge">
+                            🛒 Cart
+                            <span class="cart-count" id="cartCount">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <main>
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h1>Secure Checkout</h1>
+                <p>Complete your order safely and securely</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-step">
+                    <div class="step-circle completed">1</div>
+                    <span>Cart</span>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle active">2</div>
+                    <span>Checkout</span>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle inactive">3</div>
+                    <span>Confirmation</span>
+                </div>
+            </div>
+
+            <div class="checkout-content">
+                <div class="checkout-form">
+                    <form id="checkoutForm">
+                        <!-- Shipping Information -->
+                        <div class="form-section">
+                            <h3>🚚 Shipping Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First Name *</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name *</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Street Address *</label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City *</label>
+                                    <input type="text" id="city" name="city" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="postalCode">Postal Code *</label>
+                                    <input type="text" id="postalCode" name="postalCode" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="district">District *</label>
+                                <select id="district" name="district" required>
+                                    <option value="">Select District</option>
+                                    <option value="dhaka">Dhaka</option>
+                                    <option value="chittagong">Chittagong</option>
+                                    <option value="sylhet">Sylhet</option>
+                                    <option value="rajshahi">Rajshahi</option>
+                                    <option value="barisal">Barisal</option>
+                                    <option value="khulna">Khulna</option>
+                                    <option value="rangpur">Rangpur</option>
+                                    <option value="mymensingh">Mymensingh</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="form-section">
+                            <h3>💳 Payment Method</h3>
+                            <div class="payment-methods">
+                                <div class="payment-method" onclick="payment.selectPaymentMethod('card')">
+                                    <div class="payment-method-icon">💳</div>
+                                    <h4>Credit/Debit Card</h4>
+                                </div>
+                                <div class="payment-method" onclick="payment.selectPaymentMethod('bkash')">
+                                    <div class="payment-method-icon">📱</div>
+                                    <h4>bKash</h4>
+                                </div>
+                                <div class="payment-method" onclick="payment.selectPaymentMethod('nagad')">
+                                    <div class="payment-method-icon">📲</div>
+                                    <h4>Nagad</h4>
+                                </div>
+                                <div class="payment-method" onclick="payment.selectPaymentMethod('cod')">
+                                    <div class="payment-method-icon">💵</div>
+                                    <h4>Cash on Delivery</h4>
+                                </div>
+                            </div>
+
+                            <!-- Card Payment Details -->
+                            <div class="card-details" id="cardDetails">
+                                <div class="form-group">
+                                    <label for="cardNumber">Card Number *</label>
+                                    <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="expiryDate">Expiry Date *</label>
+                                        <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cvv">CVV *</label>
+                                        <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardName">Name on Card *</label>
+                                    <input type="text" id="cardName" name="cardName">
+                                </div>
+                            </div>
+
+                            <!-- Mobile Payment Details -->
+                            <div class="card-details" id="mobileDetails">
+                                <div class="form-group">
+                                    <label for="mobileNumber">Mobile Number *</label>
+                                    <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="+880 1XXX-XXXXXX">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pin">PIN *</label>
+                                    <input type="password" id="pin" name="pin" placeholder="Enter your PIN" maxlength="5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Notes -->
+                        <div class="form-section">
+                            <h3>📝 Order Notes (Optional)</h3>
+                            <div class="form-group">
+                                <label for="orderNotes">Special Instructions</label>
+                                <textarea id="orderNotes" name="orderNotes" rows="3" placeholder="Any special instructions for delivery..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="order-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    
+                    <div class="order-items" id="orderItems">
+                        <!-- Order items will be populated by JavaScript -->
+                    </div>
+
+                    <div id="orderTotals">
+                        <!-- Order totals will be populated by JavaScript -->
+                    </div>
+
+                    <a href="success.html"><button class="place-order-btn" id="placeOrderBtn" onclick="payment.processPayment()">
+                        Place Order Now
+                    </button></a>
+
+                    <a href="cart.html" class="back-to-cart">← Back to Cart</a>
+
+                    <div class="security-info">
+                        <h4>🔒 Secure Payment</h4>
+                        <p>Your payment information is encrypted and secure. We never store your card details.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h2 class="logo">BazarBD</h2>
+                <p>দ্রুত ডেলিভারি, নিরাপদ পেমেন্ট, আসল পণ্য।</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Help</h3>
+                <ul>
+                    <li><a href="#">How to Order</a></li>
+                    <li><a href="#">Payment Options</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="electronic.html">Electronics</a></li>
+                    <li><a href="fashion.html">Fashion</a></li>
+                    <li><a href="bike.html">Bikes</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: support@bazarbd.com</p>
+                <p>Phone: +88-01234-567890</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 BazarBD — All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+            // Complete Payment and Checkout Management System
+    class PaymentManager {
+        constructor() {
+            this.checkoutData = JSON.parse(localStorage.getItem('bazarbd_checkout')) || null;
+            this.selectedPaymentMethod = null;
+            this.formData = {};
+            this.init();
+        }
+
+        init() {
+            if (!this.checkoutData || !this.checkoutData.items || this.checkoutData.items.length === 0) {
+                this.redirectToCart();
+                return;
+            }
+
+            this.renderOrderSummary();
+            this.updateCartCount();
+            this.setupFormValidation();
+            this.setupCardFormatting();
+        }
+
+        redirectToCart() {
+            this.showNotification('Your cart is empty. Redirecting to cart page...', 'error');
+            setTimeout(() => {
+                window.location.href = 'cart.html';
+            }, 2000);
+        }
+
+        renderOrderSummary() {
+            const orderItems = document.getElementById('orderItems');
+            const orderTotals = document.getElementById('orderTotals');
+
+            // Render order items
+            orderItems.innerHTML = this.checkoutData.items.map(item => `
+                <div class="order-item">
+                    <img src="${item.image}" alt="${item.title}" class="item-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjZjhmOWZhIi8+CjxwYXRoIGQ9Ik0yMCAyNEgyMFYzNkgyMFYyNFoiIGZpbGw9IiM5OTkiLz4KPHBhdGggZD0iTTI0IDI0SDI0VjM2SDI0VjI0WiIgZmlsbD0iIzk5OSIvPgo8L3N2Zz4K'">
+                    <div class="item-info">
+                        <h4>${item.title}</h4>
+                        <p>Qty: ${item.quantity} × ${item.price}</p>
+                    </div>
+                    <div class="item-price">৳${(this.extractPrice(item.price) * item.quantity).toFixed(2)}</div>
+                </div>
+            `).join('');
+
+            // Calculate totals
+            const subtotal = this.checkoutData.subtotal;
+            const discount = this.checkoutData.discount || 0;
+            const shipping = subtotal > 1000 ? 0 : 50;
+            const tax = subtotal * 0.05;
+            const total = subtotal - discount + shipping + tax;
+
+            // Render totals
+            orderTotals.innerHTML = `
+                <div class="summary-row">
+                    <span>Subtotal (${this.checkoutData.items.length} items):</span>
+                    <span>৳${subtotal.toFixed(2)}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span>${shipping === 0 ? 'FREE' : '৳' + shipping.toFixed(2)}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (5%):</span>
+                    <span>৳${tax.toFixed(2)}</span>
+                </div>
+                ${discount > 0 ? `
+                    <div class="summary-row">
+                        <span>Discount ${this.checkoutData.appliedCoupon ? `(${this.checkoutData.appliedCoupon})` : ''}:</span>
+                        <span style="color: #28a745;">-৳${discount.toFixed(2)}</span>
+                    </div>
+                ` : ''}
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span>৳${total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        extractPrice(priceText) {
+            const matches = priceText.match(/[\d,]+/);
+            return matches ? parseFloat(matches[0].replace(/,/g, '')) : 0;
+        }
+
+        selectPaymentMethod(method) {
+            // Remove previous selection
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selection to clicked method
+            event.target.closest('.payment-method').classList.add('selected');
+            this.selectedPaymentMethod = method;
+
+            // Hide all payment details
+            document.querySelectorAll('.card-details').forEach(el => {
+                el.classList.remove('show');
+            });
+
+            // Show relevant payment details
+            if (method === 'card') {
+                document.getElementById('cardDetails').classList.add('show');
+            } else if (method === 'bkash' || method === 'nagad') {
+                document.getElementById('mobileDetails').classList.add('show');
+            }
+
+            this.showNotification(`${this.getPaymentMethodName(method)} selected`, 'success');
+        }
+
+        getPaymentMethodName(method) {
+            const names = {
+                'card': 'Credit/Debit Card',
+                'bkash': 'bKash',
+                'nagad': 'Nagad',
+                'cod': 'Cash on Delivery'
+            };
+            return names[method] || method;
+        }
+
+        setupFormValidation() {
+            const form = document.getElementById('checkoutForm');
+            const inputs = form.querySelectorAll('input[required], select[required]');
+
+            inputs.forEach(input => {
+                input.addEventListener('blur', () => {
+                    this.validateField(input);
+                });
+
+                input.addEventListener('input', () => {
+                    this.clearFieldError(input);
+                });
+            });
+        }
+
+        validateField(field) {
+            const value = field.value.trim();
+            let isValid = true;
+            let errorMessage = '';
+
+            // Check required fields
+            if (field.hasAttribute('required') && !value) {
+                isValid = false;
+                errorMessage = 'This field is required';
+            }
+
+            // Specific validations
+            if (value) {
+                switch (field.type) {
+                    case 'email':
+                        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                        errorMessage = 'Please enter a valid email address';
+                        break;
+                    case 'tel':
+                        isValid = /^[+]?[\d\s-()]+$/.test(value) && value.length >= 10;
+                        errorMessage = 'Please enter a valid phone number';
+                        break;
+                }
+
+                // Card number validation
+                if (field.id === 'cardNumber' && this.selectedPaymentMethod === 'card') {
+                    isValid = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/.test(value);
+                    errorMessage = 'Please enter a valid card number';
+                }
+
+                // Expiry date validation
+                if (field.id === 'expiryDate' && this.selectedPaymentMethod === 'card') {
+                    isValid = /^\d{2}\/\d{2}$/.test(value);
+                    errorMessage = 'Please enter a valid expiry date (MM/YY)';
+                }
+
+                // CVV validation
+                if (field.id === 'cvv' && this.selectedPaymentMethod === 'card') {
+                    isValid = /^\d{3,4}$/.test(value);
+                    errorMessage = 'Please enter a valid CVV';
+                }
+            }
+
+            this.displayFieldValidation(field, isValid, errorMessage);
+            return isValid;
+        }
+
+        displayFieldValidation(field, isValid, errorMessage) {
+            // Remove existing error styling
+            field.style.borderColor = isValid ? '#e0e6ed' : '#dc3545';
+            
+            // Remove existing error message
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            // Add error message if validation failed
+            if (!isValid && errorMessage) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.style.cssText = 'color: #dc3545; font-size: 12px; margin-top: 5px;';
+                errorDiv.textContent = errorMessage;
+                field.parentNode.appendChild(errorDiv);
+            }
+        }
+
+        clearFieldError(field) {
+            field.style.borderColor = '#e0e6ed';
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
+
+        setupCardFormatting() {
+            const cardNumber = document.getElementById('cardNumber');
+            const expiryDate = document.getElementById('expiryDate');
+            const cvv = document.getElementById('cvv');
+
+            // Format card number
+            if (cardNumber) {
+                cardNumber.addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                    let formattedInputValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                    if (formattedInputValue.length > 19) {
+                        formattedInputValue = formattedInputValue.substr(0, 19);
+                    }
+                    e.target.value = formattedInputValue;
+                });
+            }
+
+            // Format expiry date
+            if (expiryDate) {
+                expiryDate.addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                    }
+                    e.target.value = value;
+                });
+            }
+
+            // Format CVV
+            if (cvv) {
+                cvv.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+                });
+            }
+        }
+
+        validateForm() {
+            const form = document.getElementById('checkoutForm');
+            const requiredFields = form.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+
+            // Check if payment method is selected
+            if (!this.selectedPaymentMethod) {
+                this.showNotification('Please select a payment method', 'error');
+                return false;
+            }
+
+            // Validate all required fields
+            requiredFields.forEach(field => {
+                if (!this.validateField(field)) {
+                    isValid = false;
+                }
+            });
+
+            // Additional validation for payment method specific fields
+            if (this.selectedPaymentMethod === 'card') {
+                const cardFields = ['cardNumber', 'expiryDate', 'cvv', 'cardName'];
+                cardFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field && !this.validateField(field)) {
+                        isValid = false;
+                    }
+                });
+            } else if (this.selectedPaymentMethod === 'bkash' || this.selectedPaymentMethod === 'nagad') {
+                const mobileFields = ['mobileNumber', 'pin'];
+                mobileFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field && field.value.trim() === '') {
+                        this.validateField(field);
+                        isValid = false;
+                    }
+                });
+            }
+
+            return isValid;
+        }
+
+        collectFormData() {
+            const form = document.getElementById('checkoutForm');
+            const formData = new FormData(form);
+            const data = {};
+
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            data.paymentMethod = this.selectedPaymentMethod;
+            data.orderTotal = this.calculateTotal();
+            data.orderItems = this.checkoutData.items;
+
+            return data;
+        }
+
+        calculateTotal() {
+            const subtotal = this.checkoutData.subtotal;
+            const discount = this.checkoutData.discount || 0;
+            const shipping = subtotal > 1000 ? 0 : 50;
+            const tax = subtotal * 0.05;
+            return subtotal - discount + shipping + tax;
+        }
+
+        async processPayment() {
+            // Show loading
+            this.showLoading(true);
+            
+            try {
+                // Validate form
+                if (!this.validateForm()) {
+                    this.showLoading(false);
+                    return;
+                }
+
+                // Collect form data
+                this.formData = this.collectFormData();
+
+                // Simulate payment processing
+                await this.simulatePaymentProcessing();
+
+                // Generate order
+                const order = this.generateOrder();
+
+                // Save order to localStorage
+                this.saveOrder(order);
+
+                // Clear cart and checkout data
+                this.clearCheckoutData();
+
+                // Show success and redirect
+                this.showNotification('Order placed successfully!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = `order-success.html?order=${order.orderNumber}`;
+                }, 2000);
+
+            } catch (error) {
+                console.error('Payment processing error:', error);
+                this.showNotification('Payment failed. Please try again.', 'error');
+            } finally {
+                this.showLoading(false);
+            }
+        }
+
+        async simulatePaymentProcessing() {
+            const processingTime = this.selectedPaymentMethod === 'cod' ? 1000 : 3000;
+            
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate 95% success rate
+                    if (Math.random() < 0.95) {
+                        resolve();
+                    } else {
+                        reject(new Error('Payment processing failed'));
+                    }
+                }, processingTime);
+            });
+        }
+
+        generateOrder() {
+            const orderNumber = 'BZR-' + new Date().getFullYear() + '-' + 
+                            String(Date.now()).slice(-6);
+            
+            return {
+                orderNumber: orderNumber,
+                orderDate: new Date().toISOString().split('T')[0],
+                customerInfo: {
+                    firstName: this.formData.firstName,
+                    lastName: this.formData.lastName,
+                    email: this.formData.email,
+                    phone: this.formData.phone,
+                    address: {
+                        street: this.formData.address,
+                        city: this.formData.city,
+                        postalCode: this.formData.postalCode,
+                        district: this.formData.district
+                    }
+                },
+                items: this.checkoutData.items,
+                orderSummary: {
+                    subtotal: this.checkoutData.subtotal,
+                    discount: this.checkoutData.discount || 0,
+                    shipping: this.checkoutData.subtotal > 1000 ? 0 : 50,
+                    tax: this.checkoutData.subtotal * 0.05,
+                    total: this.calculateTotal()
+                },
+                paymentInfo: {
+                    method: this.selectedPaymentMethod,
+                    status: this.selectedPaymentMethod === 'cod' ? 'pending' : 'completed'
+                },
+                status: 'confirmed',
+                trackingNumber: 'TRK' + String(Date.now()).slice(-9),
+                expectedDelivery: this.calculateDeliveryDate(),
+                notes: this.formData.orderNotes || ''
+            };
+        }
+
+        calculateDeliveryDate() {
+            const deliveryDays = this.selectedPaymentMethod === 'cod' ? 5 : 3;
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
+            return deliveryDate.toISOString().split('T')[0];
+        }
+
+        saveOrder(order) {
+            // Get existing orders or create empty array
+            const existingOrders = JSON.parse(localStorage.getItem('bazarbd_orders')) || [];
+            
+            // Add new order
+            existingOrders.push(order);
+            
+            // Save back to localStorage
+            localStorage.setItem('bazarbd_orders', JSON.stringify(existingOrders));
+        }
+
+        clearCheckoutData() {
+            localStorage.removeItem('bazarbd_checkout');
+            localStorage.removeItem('bazarbd_cart');
+        }
+
+        showLoading(show) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+            
+            if (show) {
+                loadingOverlay.style.display = 'flex';
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.textContent = 'Processing Payment...';
+            } else {
+                loadingOverlay.style.display = 'none';
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.textContent = 'Place Order Now';
+            }
+        }
+
+        updateCartCount() {
+            const cartCount = this.checkoutData?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
+            const cartCountElement = document.getElementById('cartCount');
+            if (cartCountElement) {
+                cartCountElement.textContent = cartCount;
+            }
+        }
+
+        showNotification(message, type) {
+            // Remove existing notification
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    }
+
+    // Initialize payment manager when page loads
+    let payment;
+    document.addEventListener('DOMContentLoaded', function() {
+        payment = new PaymentManager();
+        
+        // Add global payment object for onclick handlers
+        window.payment = payment;
+    });
+
+    // Additional utility functions
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('bn-BD', {
+            style: 'currency',
+            currency: 'BDT'
+        }).format(amount);
+    }
+
+    function validateBangladeshPhone(phone) {
+        const phoneRegex = /^(\+880|0)?1[3-9]\d{8}$/;
+        return phoneRegex.test(phone.replace(/\s|-/g, ''));
+    }
+
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Export for use in HTML onclick handlers
+    window.payment = {
+        selectPaymentMethod: function(method) {
+            if (payment) payment.selectPaymentMethod(method);
+        },
+        processPayment: function() {
+            if (payment) payment.processPayment();
+        }
+    };
