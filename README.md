@@ -1,4 +1,4 @@
-# BD Bazar — Complete Project Documentation
+# BD Bazar
 
 **Project Title:** BD Bazar — Online Shopping Platform  
 **Project Type:** Full-Stack Dynamic E-Commerce Web Application  
